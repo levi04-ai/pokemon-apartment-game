@@ -178,8 +178,8 @@ const UI = {
         ctx.textAlign = 'center';
         ctx.fillText('בחירת דמות', cw / 2, 60);
 
-        // Two character boxes - responsive
-        const boxW = Math.min(140, cw * 0.3), boxH = Math.min(180, ch * 0.35);
+        // Two character boxes - responsive, 20% bigger
+        const boxW = Math.min(170, cw * 0.35), boxH = Math.min(220, ch * 0.4);
         const gap = Math.min(40, cw * 0.06);
         const totalW = boxW * 2 + gap;
         const startX = cw / 2 - totalW / 2;
@@ -249,9 +249,9 @@ const UI = {
         }
 
         const heartImg = Assets.get('heart');
-        const size = 50;
+        const size = 65;
         for (let i = 0; i < 3; i++) {
-            const hx = cw - 165 + i * 52, hy = 4;
+            const hx = cw - 140 + i * 44, hy = 4;
             const alive = i < GameState.hearts;
             const justLost = !alive && i === GameState.hearts && GameState.heartBlinking;
 
@@ -610,11 +610,11 @@ const UI = {
         const talImg = Assets.get('tal');
         if (talImg && talImg.complete && talImg.naturalWidth > 0) {
             const tw = 130, th = Math.round(130 * (talImg.naturalHeight / talImg.naturalWidth));
-            const shakeX = Math.sin(Date.now() / 60) * 2;
-            const shakeY = Math.sin(Date.now() / 90) * 1.5;
+            const shakeX = Math.sin(Date.now() / 50) * 3;
+            const shakeY = Math.abs(Math.sin(Date.now() / 80)) * 2;
             ctx.save();
-            ctx.translate(cw/2 + shakeX, ch * 0.25 + shakeY);
-            ctx.rotate(-Math.PI / 2 + Math.sin(Date.now() / 300) * 0.06);
+            ctx.translate(cw/2 + shakeX, ch * 0.35 + shakeY);
+            ctx.rotate(Math.sin(Date.now() / 200) * 0.05);
             ctx.drawImage(talImg, -tw/2, -th/2, tw, th);
             ctx.restore();
 
