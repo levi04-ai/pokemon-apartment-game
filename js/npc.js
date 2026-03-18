@@ -7,7 +7,7 @@ const Companion = {
     followDelay: 6,
     checkInTimer: 0,
     checkInInterval: 45000,
-    homeCol: 19, homeRow: 20,
+    homeCol: 19, homeRow: 22,
     walkingToTarget: false, walkTarget: null,
     walkTimer: 0, walkSpeed: 300, // Move one tile every 300ms
 

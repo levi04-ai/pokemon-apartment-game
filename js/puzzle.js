@@ -98,7 +98,7 @@ const GameState = {
             // Walk to computer using A* pathfinding
             Companion.followMode = false;
             Companion.hintMode = true;
-            Companion.walkToTarget(19, 20);
+            Companion.walkToTarget(19, 22);
         }, 'adam');
     },
 
