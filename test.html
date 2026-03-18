@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html><body>
+<h2>Test</h2>
+<img id="testimg" src="outdoor.jpg" style="max-width:300px">
+<p id="status">Loading...</p>
+<script>
+const img = document.getElementById('testimg');
+img.onload = () => document.getElementById('status').textContent = 'Image loaded: ' + img.naturalWidth + 'x' + img.naturalHeight;
+img.onerror = () => document.getElementById('status').textContent = 'Image FAILED to load!';
+</script>
+</body></html>

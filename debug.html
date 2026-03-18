@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html><body>
+<h2>Debug</h2>
+<pre id="log"></pre>
+<script>
+function log(msg) {
+    document.getElementById('log').textContent += msg + '\n';
+    console.log(msg);
+}
+window.onerror = function(msg, url, line) {
+    log('ERROR: ' + msg + ' @ ' + url.split('/').pop() + ':' + line);
+    return true;
+};
+</script>
+<script src="js/tiles.js?v=99"></script>
+<script>log('tiles.js loaded OK');</script>
+<script src="js/sprites.js?v=99"></script>
+<script>log('sprites.js loaded OK');</script>
+<script src="js/map.js?v=99"></script>
+<script>log('map.js loaded OK');</script>
+<script src="js/ui.js?v=99"></script>
+<script>log('ui.js loaded OK');</script>
+<script src="js/player.js?v=99"></script>
+<script>log('player.js loaded OK');</script>
+<script src="js/npc.js?v=99"></script>
+<script>log('npc.js loaded OK');</script>
+<script src="js/puzzle.js?v=99"></script>
+<script>log('puzzle.js loaded OK');</script>
+<script src="js/game.js?v=99"></script>
+<script>log('game.js loaded OK');</script>
+<script>log('ALL LOADED. Assets total: ' + Assets.total);</script>
+</body></html>
