@@ -14,20 +14,18 @@ const GameState = {
 
     // Adam walks to Tal, says something, then walks back to computer
     _adamComes(line1, line2) {
-        // Walk TO player using A*
-        Companion.walkToTarget(Player.gridCol + 1, Player.gridRow);
-        // Wait for arrival then talk
-        const wait = setInterval(() => {
-            const dist = Math.abs(Companion.gridCol - Player.gridCol) + Math.abs(Companion.gridRow - Player.gridRow);
-            if (dist <= 2 || !Companion.walkingToTarget) {
-                clearInterval(wait);
-                Companion.facePlayer();
-                UI.showDialog('אדם', [line1, line2, 'אני צריך לחזור לעבוד, בהצלחה!'], () => {
-                    // Walk BACK to computer using A*
-                    Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
-                }, 'adam');
-            }
-        }, 200);
+        Companion.gridCol = Player.gridCol + 1;
+        Companion.gridRow = Player.gridRow;
+        Companion.sprite.x = Companion.gridCol * TILE_SIZE;
+        Companion.sprite.y = Companion.gridRow * TILE_SIZE;
+        Companion.facePlayer();
+        UI.showDialog('אדם', [line1, line2, 'אני צריך לחזור לעבוד, בהצלחה!'], () => {
+            Companion.gridCol = Companion.homeCol;
+            Companion.gridRow = Companion.homeRow;
+            Companion.sprite.x = Companion.homeCol * TILE_SIZE;
+            Companion.sprite.y = Companion.homeRow * TILE_SIZE;
+            Companion.sprite.direction = Direction.UP;
+        }, 'adam');
     },
 
     heartBlinkTimer: 0,
@@ -98,7 +96,7 @@ const GameState = {
             // Walk to computer using A* pathfinding
             Companion.followMode = false;
             Companion.hintMode = true;
-            Companion.walkToTarget(19, 22);
+            Companion.gridCol = 19; Companion.gridRow = 19; Companion.sprite.x = 19*TILE_SIZE; Companion.sprite.y = 19*TILE_SIZE; Companion.sprite.direction = Direction.UP;
         }, 'adam');
     },
 
