@@ -103,8 +103,9 @@ body {
     font-size: 12px;
 }
 
-@media (max-width: 900px), (hover: none) {
-    #mobileControls { display: block; }
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+    #mobileMsg { display: flex !important; }
+    #gameCanvas { display: none !important; }
 }
 
 /* Mobile - portrait friendly */
