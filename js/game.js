@@ -154,6 +154,19 @@ const Game = {
             if (UI.keypadActive) UI.handleKeypadClick(mx, my);
         });
 
+        // Mobile buttons
+        document.querySelectorAll('#mobileControls button').forEach(btn => {
+            const key = btn.dataset.key;
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                document.dispatchEvent(new KeyboardEvent('keyup', { key }));
+            });
+        });
+
         // Touch
         let tx = 0, ty = 0;
         this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; });
