@@ -408,28 +408,35 @@ const UI = {
     },
 
     drawKeypad(ctx, cw, ch) {
-        const pw = 340, ph = 500, px = cw/2 - pw/2, py = ch/2 - ph/2;
+        // Responsive sizing
+        const pw = Math.min(cw * 0.85, 340);
+        const bw = Math.floor((pw - 60) / 3);
+        const bh = Math.floor(bw * 0.75);
+        const gx = 8, gy = 6;
+        const ph = bh * 4 + gy * 3 + 160;
+        const px = cw/2 - pw/2, py = Math.max(5, ch/2 - ph/2);
+
         ctx.fillStyle = 'rgba(5,5,20,0.96)';
         ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 16); ctx.fill();
         ctx.strokeStyle = '#5588CC'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 16); ctx.stroke();
 
         // Title
-        ctx.font = '28px ' + PIXEL_FONT; ctx.fillStyle = '#FFD700'; ctx.textAlign = 'center';
-        ctx.fillText('🏠 אינטרקום', px+pw/2, py+38);
+        const titleSize = Math.min(28, pw * 0.08);
+        ctx.font = titleSize + 'px ' + PIXEL_FONT; ctx.fillStyle = '#FFD700'; ctx.textAlign = 'center';
+        ctx.fillText('🏠 אינטרקום', px+pw/2, py+30);
 
         // Code display
-        ctx.fillStyle = '#111'; ctx.beginPath(); ctx.roundRect(px+24, py+52, pw-48, 50, 8); ctx.fill();
+        ctx.fillStyle = '#111'; ctx.beginPath(); ctx.roundRect(px+16, py+42, pw-32, 40, 8); ctx.fill();
         ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.roundRect(px+24, py+52, pw-48, 50, 8); ctx.stroke();
-        ctx.font = '30px ' + PIXEL_FONT; ctx.fillStyle = '#0F0';
-        ctx.fillText(this.keypadCode || '_ _ _ _ _ _', px+pw/2, py+85);
+        ctx.beginPath(); ctx.roundRect(px+16, py+42, pw-32, 40, 8); ctx.stroke();
+        ctx.font = Math.min(24, pw*0.07) + 'px ' + PIXEL_FONT; ctx.fillStyle = '#0F0';
+        ctx.fillText(this.keypadCode || '_ _ _ _ _ _', px+pw/2, py+68);
 
-        // Buttons
+        // Buttons grid
         const btns = ['1','2','3','4','5','6','7','8','9','🔑','0','⌫'];
-        const bw = 80, bh = 62, gx = 14, gy = 12;
         const gridX = px + (pw - 3*bw - 2*gx) / 2;
-        const gridY = py + 115;
+        const gridY = py + 92;
 
         this._keypadBtns = [];
         for (let i = 0; i < btns.length; i++) {
@@ -439,9 +446,10 @@ const UI = {
             ctx.beginPath(); ctx.roundRect(bx, by_, bw, bh, 8); ctx.fill();
             ctx.strokeStyle = '#444466'; ctx.lineWidth = 1;
             ctx.beginPath(); ctx.roundRect(bx, by_, bw, bh, 8); ctx.stroke();
-            ctx.font = btns[i]==='🔑' ? '32px sans-serif' : '28px ' + PIXEL_FONT;
+            const fontSize = btns[i]==='🔑' ? Math.min(30, bw*0.4) : Math.min(24, bw*0.35);
+            ctx.font = fontSize + 'px ' + (btns[i]==='🔑' ? 'sans-serif' : PIXEL_FONT);
             ctx.fillStyle = btns[i]==='🔑' ? '#FFD700' : '#CCC';
-            ctx.fillText(btns[i], bx+bw/2, by_+bh/2+10);
+            ctx.fillText(btns[i], bx+bw/2, by_+bh/2+fontSize*0.35);
 
             this._keypadBtns[i] = {x:bx, y:by_, w:bw, h:bh, val: btns[i]};
         }
@@ -449,12 +457,12 @@ const UI = {
         // Submit button
         const sby = gridY + 4*(bh+gy) + 4;
         ctx.fillStyle = '#225522';
-        ctx.beginPath(); ctx.roundRect(px+24, sby, pw-48, 46, 8); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(px+16, sby, pw-32, 40, 8); ctx.fill();
         ctx.strokeStyle = '#44AA44'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect(px+24, sby, pw-48, 46, 8); ctx.stroke();
-        ctx.font = '22px ' + PIXEL_FONT; ctx.fillStyle = '#FFF';
-        ctx.fillText('אישור', px+pw/2, sby+32);
-        this._keypadSubmitBtn = {x:px+24, y:sby, w:pw-48, h:46};
+        ctx.beginPath(); ctx.roundRect(px+16, sby, pw-32, 40, 8); ctx.stroke();
+        ctx.font = Math.min(20, pw*0.06) + 'px ' + PIXEL_FONT; ctx.fillStyle = '#FFF';
+        ctx.fillText('אישור', px+pw/2, sby+28);
+        this._keypadSubmitBtn = {x:px+16, y:sby, w:pw-32, h:40};
 
         ctx.textAlign = 'left';
     },
