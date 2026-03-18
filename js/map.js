@@ -165,19 +165,19 @@ const GameMap = {
         const pulse = 0.5 + Math.sin(Date.now() / 400) * 0.4;
         const pulseR = baseR + Math.sin(Date.now() / 300) * 10;
 
-        // Green glow
+        // Red glow
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, pulseR * 1.3);
-        grad.addColorStop(0, `rgba(50, 255, 100, ${pulse * 0.5})`);
-        grad.addColorStop(0.3, `rgba(30, 200, 80, ${pulse * 0.35})`);
-        grad.addColorStop(0.6, `rgba(20, 150, 60, ${pulse * 0.15})`);
-        grad.addColorStop(1, 'rgba(0, 150, 50, 0)');
+        grad.addColorStop(0, `rgba(255, 50, 50, ${pulse * 0.5})`);
+        grad.addColorStop(0.3, `rgba(255, 30, 30, ${pulse * 0.35})`);
+        grad.addColorStop(0.6, `rgba(200, 20, 20, ${pulse * 0.15})`);
+        grad.addColorStop(1, 'rgba(200, 0, 0, 0)');
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(cx, cy, pulseR * 1.3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Bright green center
-        ctx.fillStyle = `rgba(100, 255, 150, ${pulse * 0.7})`;
+        // Bright red center
+        ctx.fillStyle = `rgba(255, 100, 100, ${pulse * 0.7})`;
         ctx.beginPath();
         ctx.arc(cx, cy, 8 + Math.sin(Date.now()/200) * 4, 0, Math.PI * 2);
         ctx.fill();

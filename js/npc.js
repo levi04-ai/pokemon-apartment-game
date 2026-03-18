@@ -74,7 +74,7 @@ const Companion = {
                         this.walkToTarget(8, 13); // Kitchen area
                         setTimeout(() => {
                             UI.showDialog('אדם', quote, () => {
-                                this.gridCol = this.homeCol; this.gridRow = this.homeRow; this.sprite.x = this.homeCol * TILE_SIZE; this.sprite.y = this.homeRow * TILE_SIZE; this.sprite.direction = Direction.UP;
+                                this.walkToTarget(this.homeCol, this.homeRow);
                             }, 'adam');
                         }, 3000);
                     } else {
@@ -84,7 +84,7 @@ const Companion = {
                         this.sprite.y = this.gridRow * TILE_SIZE;
                         this.facePlayer();
                         UI.showDialog('אדם', quote, () => {
-                            this.gridCol = this.homeCol; this.gridRow = this.homeRow; this.sprite.x = this.homeCol * TILE_SIZE; this.sprite.y = this.homeRow * TILE_SIZE; this.sprite.direction = Direction.UP;
+                            this.walkToTarget(this.homeCol, this.homeRow);
                         }, 'adam');
                     }
                 }
@@ -133,66 +133,98 @@ const Companion = {
     },
 
     walkToTarget(targetCol, targetRow) {
-        this.walkTarget = { col: targetCol, row: targetRow };
+        // Use A* pathfinding to find real path
+        this.walkPath = this._findPath(this.gridCol, this.gridRow, targetCol, targetRow);
+        this.walkPathIdx = 0;
         this.walkingToTarget = true;
+        this.walkTarget = { col: targetCol, row: targetRow };
     },
 
-    _walkStuckCount: 0,
+    _findPath(sx, sy, tx, ty) {
+        // A* pathfinding
+        const key = (x, y) => x + ',' + y;
+        const open = [{ x: sx, y: sy, g: 0, h: 0, f: 0, parent: null }];
+        const closed = new Set();
+        const cameFrom = {};
+
+        while (open.length > 0) {
+            // Find lowest f
+            open.sort((a, b) => a.f - b.f);
+            const current = open.shift();
+
+            if (current.x === tx && current.y === ty) {
+                // Reconstruct path
+                const path = [];
+                let node = current;
+                while (node.parent) {
+                    path.unshift({ col: node.x, row: node.y });
+                    node = node.parent;
+                }
+                return path;
+            }
+
+            closed.add(key(current.x, current.y));
+
+            // Neighbors (4 directions)
+            const dirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
+            for (const d of dirs) {
+                const nx = current.x + d.dx, ny = current.y + d.dy;
+                if (closed.has(key(nx, ny))) continue;
+                if (GameMap.isSolid(nx, ny) && !(nx === tx && ny === ty)) continue;
+
+                const g = current.g + 1;
+                const h = Math.abs(nx - tx) + Math.abs(ny - ty);
+                const existing = open.find(n => n.x === nx && n.y === ny);
+                if (existing) {
+                    if (g < existing.g) {
+                        existing.g = g; existing.f = g + h; existing.parent = current;
+                    }
+                } else {
+                    open.push({ x: nx, y: ny, g, h, f: g + h, parent: current });
+                }
+            }
+
+            // Safety: don't search too long
+            if (closed.size > 500) break;
+        }
+
+        // No path found - return direct line
+        return [{ col: tx, row: ty }];
+    },
 
     updateWalkToTarget() {
-        if (!this.walkingToTarget || !this.walkTarget) return;
-        const tc = this.walkTarget.col, tr = this.walkTarget.row;
-        if (this.gridCol === tc && this.gridRow === tr) {
+        if (!this.walkingToTarget || !this.walkPath || this.walkPathIdx >= this.walkPath.length) {
             this.walkingToTarget = false;
-            this.walkTarget = null;
             this.sprite.isMoving = false;
-            this._walkStuckCount = 0;
             return;
         }
 
-        const dx = tc - this.gridCol, dy = tr - this.gridRow;
-        let nc = this.gridCol, nr = this.gridRow;
+        const next = this.walkPath[this.walkPathIdx];
+        if (this.gridCol === next.col && this.gridRow === next.row) {
+            this.walkPathIdx++;
+            if (this.walkPathIdx >= this.walkPath.length) {
+                this.walkingToTarget = false;
+                this.sprite.isMoving = false;
+                return;
+            }
+            return;
+        }
 
-        // Try primary direction first
-        if (Math.abs(dx) >= Math.abs(dy)) nc += Math.sign(dx);
-        else nr += Math.sign(dy);
+        // Move toward next waypoint
+        const dx = next.col - this.gridCol, dy = next.row - this.gridRow;
+        const nc = this.gridCol + Math.sign(dx || 0);
+        const nr = this.gridRow + Math.sign(dy || 0);
 
-        // Update facing
-        if (nc > this.gridCol) this.sprite.direction = Direction.RIGHT;
-        else if (nc < this.gridCol) this.sprite.direction = Direction.LEFT;
-        else if (nr > this.gridRow) this.sprite.direction = Direction.DOWN;
-        else this.sprite.direction = Direction.UP;
+        if (dx !== 0) this.sprite.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+        else if (dy !== 0) this.sprite.direction = dy > 0 ? Direction.DOWN : Direction.UP;
 
         if (!GameMap.isSolid(nc, nr)) {
             this.gridCol = nc; this.gridRow = nr;
             this.sprite.x = nc * TILE_SIZE; this.sprite.y = nr * TILE_SIZE;
             this.sprite.isMoving = true;
-            this._walkStuckCount = 0;
         } else {
-            // Try alternate direction (perpendicular)
-            nc = this.gridCol; nr = this.gridRow;
-            if (Math.abs(dx) >= Math.abs(dy)) {
-                nr += (dy !== 0) ? Math.sign(dy) : 1;
-            } else {
-                nc += (dx !== 0) ? Math.sign(dx) : 1;
-            }
-            if (!GameMap.isSolid(nc, nr)) {
-                this.gridCol = nc; this.gridRow = nr;
-                this.sprite.x = nc * TILE_SIZE; this.sprite.y = nr * TILE_SIZE;
-                this.sprite.isMoving = true;
-                this._walkStuckCount = 0;
-            } else {
-                this._walkStuckCount++;
-                // If stuck for too long, teleport to target
-                if (this._walkStuckCount > 8) {
-                    this.gridCol = tc; this.gridRow = tr;
-                    this.sprite.x = tc * TILE_SIZE; this.sprite.y = tr * TILE_SIZE;
-                    this.walkingToTarget = false;
-                    this.walkTarget = null;
-                    this.sprite.isMoving = false;
-                    this._walkStuckCount = 0;
-                }
-            }
+            // Skip this waypoint
+            this.walkPathIdx++;
         }
     },
 

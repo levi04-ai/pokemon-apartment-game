@@ -14,19 +14,20 @@ const GameState = {
 
     // Adam walks to Tal, says something, then walks back to computer
     _adamComes(line1, line2) {
-        Companion.gridCol = Player.gridCol + 1;
-        Companion.gridRow = Player.gridRow;
-        Companion.sprite.x = Companion.gridCol * TILE_SIZE;
-        Companion.sprite.y = Companion.gridRow * TILE_SIZE;
-        Companion.facePlayer();
-        UI.showDialog('אדם', [line1, line2, 'אני צריך לחזור לעבוד, בהצלחה!'], () => {
-            // Teleport back to computer
-            Companion.gridCol = Companion.homeCol;
-            Companion.gridRow = Companion.homeRow;
-            Companion.sprite.x = Companion.homeCol * TILE_SIZE;
-            Companion.sprite.y = Companion.homeRow * TILE_SIZE;
-            Companion.sprite.direction = Direction.UP;
-        }, 'adam');
+        // Walk TO player using A*
+        Companion.walkToTarget(Player.gridCol + 1, Player.gridRow);
+        // Wait for arrival then talk
+        const wait = setInterval(() => {
+            const dist = Math.abs(Companion.gridCol - Player.gridCol) + Math.abs(Companion.gridRow - Player.gridRow);
+            if (dist <= 2 || !Companion.walkingToTarget) {
+                clearInterval(wait);
+                Companion.facePlayer();
+                UI.showDialog('אדם', [line1, line2, 'אני צריך לחזור לעבוד, בהצלחה!'], () => {
+                    // Walk BACK to computer using A*
+                    Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
+                }, 'adam');
+            }
+        }, 200);
     },
 
     heartBlinkTimer: 0,
@@ -94,14 +95,10 @@ const GameState = {
             'אבל כדי שתגיעי לחדר שינה צריכה לעשות כמה משימות ולענות על כמה שאלות',
             'אז תצאי למרפסת, שם תחכה לך החידה הראשונה!'
         ], () => {
-            // Teleport Adam to computer - walking gets stuck on walls
-            Companion.gridCol = 19;
-            Companion.gridRow = 20;
-            Companion.sprite.x = 19 * TILE_SIZE;
-            Companion.sprite.y = 20 * TILE_SIZE;
-            Companion.sprite.direction = Direction.UP;
+            // Walk to computer using A* pathfinding
             Companion.followMode = false;
             Companion.hintMode = true;
+            Companion.walkToTarget(19, 20);
         }, 'adam');
     },
 
@@ -184,9 +181,9 @@ const GameState = {
         this.setState('KITCHEN_ACTIVE');
         SFX.play('puzzle', 0.5);
         UI.showPuzzle('☕ חידת המטבח', "מה הפירוש בערבית למילה ח'אל?",
-            ['דוד של אמא', 'דוד של אבא', 'סבא מצד אמא', 'אח של סבתא'],
+            ['דוד של אבא', 'סבא מצד אמא', 'אח של סבתא', 'דוד של אמא'],
             (idx) => {
-                if (idx === 0) {
+                if (idx === 3) {
                     SFX.play('correct', 0.5);
                     this.setState('KITCHEN_COMPLETE');
                     this._adamComes('מצוין!', 'עכשיו לכי לספרייה, ליד השטיח הירוק');
