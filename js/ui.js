@@ -178,8 +178,9 @@ const UI = {
         ctx.textAlign = 'center';
         ctx.fillText('בחירת דמות', cw / 2, 60);
 
-        // Two character boxes
-        const boxW = 160, boxH = 200, gap = 60;
+        // Two character boxes - responsive
+        const boxW = Math.min(140, cw * 0.3), boxH = Math.min(180, ch * 0.35);
+        const gap = Math.min(40, cw * 0.06);
         const totalW = boxW * 2 + gap;
         const startX = cw / 2 - totalW / 2;
         const boxY = ch / 2 - boxH / 2 - 10;
@@ -248,9 +249,9 @@ const UI = {
         }
 
         const heartImg = Assets.get('heart');
-        const size = 40;
+        const size = 70;
         for (let i = 0; i < 3; i++) {
-            const hx = cw - 140 + i * 46, hy = 6;
+            const hx = cw - 230 + i * 75, hy = 4;
             const alive = i < GameState.hearts;
             const justLost = !alive && i === GameState.hearts && GameState.heartBlinking;
 
@@ -262,26 +263,26 @@ const UI = {
                     ctx.drawImage(heartImg, hx, hy, size, size);
                     ctx.filter = 'none';
                 } else {
-                    ctx.font = '36px sans-serif';
-                    ctx.fillText('💔', hx, hy + 32);
+                    ctx.font = '60px sans-serif';
+                    ctx.fillText('💔', hx, hy + 55);
                 }
                 ctx.globalAlpha = 1;
             } else if (alive) {
                 if (heartImg && heartImg.complete && heartImg.naturalWidth > 0) {
                     ctx.drawImage(heartImg, hx, hy, size, size);
                 } else {
-                    ctx.font = '36px sans-serif';
+                    ctx.font = '60px sans-serif';
                     ctx.fillStyle = '#FF2222';
-                    ctx.fillText('❤️', hx, hy + 32);
+                    ctx.fillText('❤️', hx, hy + 55);
                 }
             } else {
                 ctx.globalAlpha = 0.2;
                 if (heartImg && heartImg.complete && heartImg.naturalWidth > 0) {
                     ctx.drawImage(heartImg, hx, hy, size, size);
                 } else {
-                    ctx.font = '36px sans-serif';
+                    ctx.font = '60px sans-serif';
                     ctx.fillStyle = '#444';
-                    ctx.fillText('🖤', hx, hy + 32);
+                    ctx.fillText('🖤', hx, hy + 55);
                 }
                 ctx.globalAlpha = 1;
             }
@@ -684,7 +685,14 @@ const UI = {
         }
     },
 
+    _endScreenTimer: 0,
+
     drawEndScreen(ctx, cw, ch) {
+        this._endScreenTimer += 16;
+
+        // Play victory sound once
+        if (this._endScreenTimer < 50) SFX.play('victory', 0.7);
+
         // Romantic gradient background
         const grad = ctx.createLinearGradient(0, 0, 0, ch);
         grad.addColorStop(0, '#1a0a2e');
@@ -703,7 +711,7 @@ const UI = {
         }
 
         // Floating hearts
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 15; i++) {
             const hx = cw/2 + Math.sin(Date.now()/1000 + i*0.8) * (100 + i*15);
             const hy = ch/2 + Math.cos(Date.now()/1200 + i*0.6) * (60 + i*10);
             const size = 16 + Math.sin(Date.now()/500 + i) * 4;
@@ -713,41 +721,53 @@ const UI = {
             ctx.fillText('❤', hx, hy);
         }
 
-        // Characters
+        // Characters - JUMPING animation
+        const jumpA = Math.abs(Math.sin(Date.now() / 400)) * 20;
+        const jumpT = Math.abs(Math.sin(Date.now() / 400 + 0.5)) * 20;
         const adamImg = Assets.get('adam');
         const talImg = Assets.get('tal');
-        if (adamImg && adamImg.complete) ctx.drawImage(adamImg, cw/2 - 90, ch/2 - 50, 70, 100);
-        if (talImg && talImg.complete) ctx.drawImage(talImg, cw/2 + 20, ch/2 - 50, 70, 100);
+        if (adamImg && adamImg.complete) ctx.drawImage(adamImg, cw/2 - 100, ch/2 - 70 - jumpA, 80, 120);
+        if (talImg && talImg.complete) ctx.drawImage(talImg, cw/2 + 20, ch/2 - 70 - jumpT, 80, 120);
 
-        // Big heart between them
-        ctx.font = '40px sans-serif';
+        // Big heart between them - bouncing
+        const heartBounce = Math.sin(Date.now()/300) * 8;
+        ctx.font = '50px sans-serif';
         ctx.fillStyle = '#FF4466';
-        ctx.fillText('❤', cw/2, ch/2 - 20 + Math.sin(Date.now()/500) * 5);
+        ctx.fillText('❤', cw/2, ch/2 - 30 + heartBounce);
 
         // Text
-        ctx.font = '20px ' + PIXEL_FONT;
+        ctx.font = '24px ' + PIXEL_FONT;
         ctx.fillStyle = '#FFD700';
-        ctx.fillText('ומאז הם חיו באושר ועושר', cw/2, ch/2 + 90);
-        ctx.fillText('לנצח נצחים', cw/2, ch/2 + 120);
+        ctx.fillText('ומאז הם חיו באושר ועושר', cw/2, ch/2 + 100);
+        ctx.fillText('לנצח נצחים', cw/2, ch/2 + 135);
 
-        ctx.font = '12px ' + PIXEL_FONT;
-        ctx.fillStyle = '#AAA';
-        ctx.fillText('טל ואדם ❤', cw/2, ch - 50);
-
-        // Play again button
-        const btnW = 200, btnH = 36;
-        const btnX = cw/2 - btnW/2, btnY = ch - 42;
-        ctx.fillStyle = 'rgba(50,30,80,0.8)';
-        ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
-        ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 8); ctx.stroke();
         ctx.font = '14px ' + PIXEL_FONT;
-        ctx.fillStyle = '#FFD700';
-        ctx.fillText('🔄 משחק חדש', cw/2, btnY + 24);
+        ctx.fillStyle = '#CCC';
+        ctx.fillText('טל ואדם ❤', cw/2, ch/2 + 175);
 
-        // Store button for click
+        // Play again button - big, glowing, higher up
+        const btnPulse = 0.6 + Math.sin(Date.now() / 250) * 0.4;
+        const btnW = 260, btnH = 55;
+        const btnX = cw/2 - btnW/2, btnY = ch/2 + 200;
+
+        // Glow
+        const btnGrd = ctx.createRadialGradient(cw/2, btnY+btnH/2, 0, cw/2, btnY+btnH/2, btnW*0.6);
+        btnGrd.addColorStop(0, `rgba(200,100,255,${btnPulse*0.2})`);
+        btnGrd.addColorStop(1, 'rgba(200,100,255,0)');
+        ctx.fillStyle = btnGrd;
+        ctx.fillRect(btnX-20, btnY-10, btnW+40, btnH+20);
+
+        // Button
+        ctx.fillStyle = `rgba(60,30,100,${btnPulse*0.8})`;
+        ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 14); ctx.fill();
+        ctx.strokeStyle = `rgba(200,150,255,${btnPulse})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 14); ctx.stroke();
+        ctx.font = '22px ' + PIXEL_FONT;
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('משחק חדש', cw/2, btnY + 36);
+
         this._endScreenBtn = {x:btnX, y:btnY, w:btnW, h:btnH};
-
         ctx.textAlign = 'left';
     },
 

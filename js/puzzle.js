@@ -51,8 +51,10 @@ const GameState = {
             'אומנם קצת באיחור אבל אני עומד פה בחוץ כבר הרבה זמן וקר לי',
             'את זוכרת במקרה את הקוד לבניין?'
         ], () => {
-            Companion.gridCol = GameMap.doorCol + 1;
+            Companion.gridCol = GameMap.doorCol + 2;
+            Companion.gridRow = GameMap.doorRow + 1;
             Companion.sprite.x = Companion.gridCol * TILE_SIZE;
+            Companion.sprite.y = Companion.gridRow * TILE_SIZE;
             Companion.sprite.direction = Direction.DOWN;
         }, 'adam');
     },

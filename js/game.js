@@ -16,8 +16,8 @@ const Game = {
     },
 
     resizeCanvas() {
-        this.canvas.width = Math.min(window.innerWidth - 20, 900);
-        this.canvas.height = Math.min(window.innerHeight - 20, 650);
+        this.canvas.width = Math.min(window.innerWidth, 900);
+        this.canvas.height = Math.min(window.innerHeight, 700);
         if (this.ctx) this.ctx.imageSmoothingEnabled = false;
     },
 

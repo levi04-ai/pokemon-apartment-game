@@ -1,7 +1,7 @@
 // npc.js - Adam (companion/hint NPC)
 const Companion = {
     sprite: null,
-    gridCol: 10, gridRow: 9, // Exactly on the door (blocks entry)
+    gridCol: 10, gridRow: 10, // On the door entrance (orange bar)
     followMode: false, hintMode: false,
     greetedTal: false,
     followDelay: 6,
