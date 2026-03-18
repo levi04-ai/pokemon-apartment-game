@@ -154,7 +154,7 @@ const GameState = {
         UI.whatsappActive = true;
         UI.whatsappSelected = 0;
         UI.whatsappCallback = (idx) => {
-            if (idx === 0) {
+            if (idx === 2) { // Third option is correct
                 SFX.play('correct', 0.5);
                 this.setState('BALCONY_COMPLETE');
                 this._adamComes('ענית נכון, מצוין!', 'עכשיו לכי למטבח, שם השאלה הבאה');
