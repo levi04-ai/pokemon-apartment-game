@@ -161,62 +161,25 @@ const GameMap = {
     drawGlow(ctx, camX, camY, col, row, w, h) {
         const cx = (col + w/2) * TILE_SIZE - camX;
         const cy = (row + h/2) * TILE_SIZE - camY;
-        const baseR = Math.max(w, h) * TILE_SIZE;
-        const pulse = 0.6 + Math.sin(Date.now() / 300) * 0.4;
-        const pulseR = baseR + Math.sin(Date.now() / 200) * 20;
+        const baseR = Math.max(w, h) * TILE_SIZE * 0.8;
+        const pulse = 0.5 + Math.sin(Date.now() / 400) * 0.4;
+        const pulseR = baseR + Math.sin(Date.now() / 300) * 10;
 
-        // Giant bright glow - very visible
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, pulseR * 1.5);
-        grad.addColorStop(0, `rgba(255, 60, 60, ${pulse * 0.7})`);
-        grad.addColorStop(0.2, `rgba(255, 40, 40, ${pulse * 0.55})`);
-        grad.addColorStop(0.5, `rgba(255, 20, 20, ${pulse * 0.3})`);
-        grad.addColorStop(0.8, `rgba(255, 0, 0, ${pulse * 0.1})`);
-        grad.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        // Green glow
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, pulseR * 1.3);
+        grad.addColorStop(0, `rgba(50, 255, 100, ${pulse * 0.5})`);
+        grad.addColorStop(0.3, `rgba(30, 200, 80, ${pulse * 0.35})`);
+        grad.addColorStop(0.6, `rgba(20, 150, 60, ${pulse * 0.15})`);
+        grad.addColorStop(1, 'rgba(0, 150, 50, 0)');
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(cx, cy, pulseR * 1.5, 0, Math.PI * 2);
+        ctx.arc(cx, cy, pulseR * 1.3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Second brighter inner layer
-        const grad2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, pulseR * 0.6);
-        grad2.addColorStop(0, `rgba(255, 200, 100, ${pulse * 0.6})`);
-        grad2.addColorStop(0.5, `rgba(255, 100, 50, ${pulse * 0.4})`);
-        grad2.addColorStop(1, 'rgba(255, 50, 50, 0)');
-        ctx.fillStyle = grad2;
+        // Bright green center
+        ctx.fillStyle = `rgba(100, 255, 150, ${pulse * 0.7})`;
         ctx.beginPath();
-        ctx.arc(cx, cy, pulseR * 0.6, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 8 + Math.sin(Date.now()/200) * 4, 0, Math.PI * 2);
         ctx.fill();
-
-        // Bright white-yellow center
-        ctx.fillStyle = `rgba(255, 220, 150, ${pulse})`;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 10 + Math.sin(Date.now()/120) * 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Many floating particles going up
-        for (let i = 0; i < 8; i++) {
-            const angle = Date.now() / 600 + i * Math.PI * 2 / 8;
-            const dist = 25 + Math.sin(Date.now()/250 + i) * 15;
-            const ppx = cx + Math.cos(angle) * dist;
-            const ppy = cy + Math.sin(angle) * dist - (Date.now()/100 + i * 30) % 40;
-            const pSize = 3 + Math.sin(Date.now()/200 + i) * 2;
-            ctx.fillStyle = `rgba(255, 150, 50, ${pulse * 0.8})`;
-            ctx.beginPath();
-            ctx.arc(ppx, ppy, pSize, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Big pulsing exclamation
-        const exY = cy - pulseR - 10 + Math.sin(Date.now()/250) * 8;
-        const exScale = 1 + Math.sin(Date.now()/200) * 0.3;
-        ctx.save();
-        ctx.translate(cx, exY);
-        ctx.scale(exScale, exScale);
-        ctx.font = '32px ' + PIXEL_FONT;
-        ctx.fillStyle = `rgba(255, 255, 100, ${pulse})`;
-        ctx.textAlign = 'center';
-        ctx.fillText('❗', 0, 0);
-        ctx.restore();
-        ctx.textAlign = 'left';
     }
 };
