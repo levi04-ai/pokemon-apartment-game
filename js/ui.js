@@ -235,9 +235,9 @@ const UI = {
         }
 
         // Instructions
-        ctx.font = '12px ' + PIXEL_FONT;
-        ctx.fillStyle = '#666';
-        ctx.fillText('בחרו דמות עם החצים ולחצו Enter', cw / 2, ch - 40);
+        ctx.font = '20px ' + PIXEL_FONT;
+        ctx.fillStyle = '#888';
+        ctx.fillText('בחרו דמות עם החצים ולחצו Enter', cw / 2, ch - 30);
         ctx.textAlign = 'left';
     },
 
@@ -572,14 +572,10 @@ const UI = {
     drawGameOver(ctx, cw, ch) {
         this.gameOverTimer += 16;
 
-        // Stop music, play cry
+        // Stop music, play cry once
         if (this.gameOverTimer < 50) {
             SFX.stopBGM();
             SFX.play('cry', 0.5);
-        }
-        // Loop cry every 3 seconds
-        if (Math.floor(this.gameOverTimer / 3000) > Math.floor((this.gameOverTimer - 16) / 3000)) {
-            SFX.play('cry', 0.4);
         }
 
         // Init tears
@@ -613,23 +609,21 @@ const UI = {
         // Tal on the floor - shaking as if crying
         const talImg = Assets.get('tal');
         if (talImg && talImg.complete && talImg.naturalWidth > 0) {
-            const tw = 140, th = Math.round(140 * (talImg.naturalHeight / talImg.naturalWidth));
-            // Shake effect - trembling
+            const tw = 120, th = Math.round(120 * (talImg.naturalHeight / talImg.naturalWidth));
             const shakeX = Math.sin(Date.now() / 50) * 3;
             const shakeY = Math.abs(Math.sin(Date.now() / 80)) * 2;
-            // Draw rotated slightly (sitting/collapsed)
             ctx.save();
-            ctx.translate(cw/2 + shakeX, ch/2 - 30 + shakeY);
-            ctx.rotate(Math.sin(Date.now() / 200) * 0.05); // Subtle rocking
+            ctx.translate(cw/2 + shakeX, ch * 0.25 + shakeY);
+            ctx.rotate(Math.sin(Date.now() / 200) * 0.05);
             ctx.drawImage(talImg, -tw/2, -th/2, tw, th);
             ctx.restore();
 
-            // Tear drops from her eyes
+            // Tear drops
             for (let t = 0; t < 3; t++) {
-                const tearY = (Date.now() / 300 + t * 100) % 60;
-                ctx.globalAlpha = 1 - tearY / 60;
+                const tearY = (Date.now() / 300 + t * 100) % 50;
+                ctx.globalAlpha = 1 - tearY / 50;
                 ctx.font = '14px sans-serif';
-                ctx.fillText('💧', cw/2 - 15 + t * 15 + Math.sin(Date.now()/400+t)*3, ch/2 - 50 + tearY);
+                ctx.fillText('💧', cw/2 - 15 + t * 15, ch * 0.25 + 20 + tearY);
             }
             ctx.globalAlpha = 1;
         }
