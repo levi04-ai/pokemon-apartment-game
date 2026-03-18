@@ -47,9 +47,11 @@ const Game = {
             // Character select screen
             if (GameState.current === 'CHARACTER_SELECT' && !UI.dialogActive) {
                 if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                    if (GameState.charSelectIndex !== 0) SFX.play('click', 0.4);
                     GameState.charSelectIndex = 0; e.preventDefault(); return;
                 }
                 if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                    if (GameState.charSelectIndex !== 1) SFX.play('click', 0.4);
                     GameState.charSelectIndex = 1; e.preventDefault(); return;
                 }
                 if (e.key === ' ' || e.key === 'Enter') {

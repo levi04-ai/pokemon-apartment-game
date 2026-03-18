@@ -249,9 +249,9 @@ const UI = {
         }
 
         const heartImg = Assets.get('heart');
-        const size = 70;
+        const size = 50;
         for (let i = 0; i < 3; i++) {
-            const hx = cw - 230 + i * 75, hy = 4;
+            const hx = cw - 165 + i * 52, hy = 4;
             const alive = i < GameState.hearts;
             const justLost = !alive && i === GameState.hearts && GameState.heartBlinking;
 
@@ -609,12 +609,12 @@ const UI = {
         // Tal on the floor - shaking as if crying
         const talImg = Assets.get('tal');
         if (talImg && talImg.complete && talImg.naturalWidth > 0) {
-            const tw = 120, th = Math.round(120 * (talImg.naturalHeight / talImg.naturalWidth));
-            const shakeX = Math.sin(Date.now() / 50) * 3;
-            const shakeY = Math.abs(Math.sin(Date.now() / 80)) * 2;
+            const tw = 130, th = Math.round(130 * (talImg.naturalHeight / talImg.naturalWidth));
+            const shakeX = Math.sin(Date.now() / 60) * 2;
+            const shakeY = Math.sin(Date.now() / 90) * 1.5;
             ctx.save();
             ctx.translate(cw/2 + shakeX, ch * 0.25 + shakeY);
-            ctx.rotate(Math.sin(Date.now() / 200) * 0.05);
+            ctx.rotate(-Math.PI / 2 + Math.sin(Date.now() / 300) * 0.06);
             ctx.drawImage(talImg, -tw/2, -th/2, tw, th);
             ctx.restore();
 
