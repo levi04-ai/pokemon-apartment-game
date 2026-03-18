@@ -20,7 +20,12 @@ const GameState = {
         Companion.sprite.y = Companion.gridRow * TILE_SIZE;
         Companion.facePlayer();
         UI.showDialog('אדם', [line1, line2, 'אני צריך לחזור לעבוד, בהצלחה!'], () => {
-            Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
+            // Teleport back to computer
+            Companion.gridCol = Companion.homeCol;
+            Companion.gridRow = Companion.homeRow;
+            Companion.sprite.x = Companion.homeCol * TILE_SIZE;
+            Companion.sprite.y = Companion.homeRow * TILE_SIZE;
+            Companion.sprite.direction = Direction.UP;
         }, 'adam');
     },
 
@@ -89,7 +94,12 @@ const GameState = {
             'אבל כדי שתגיעי לחדר שינה צריכה לעשות כמה משימות ולענות על כמה שאלות',
             'אז תצאי למרפסת, שם תחכה לך החידה הראשונה!'
         ], () => {
-            Companion.walkToTarget(19, 20);
+            // Teleport Adam to computer - walking gets stuck on walls
+            Companion.gridCol = 19;
+            Companion.gridRow = 20;
+            Companion.sprite.x = 19 * TILE_SIZE;
+            Companion.sprite.y = 20 * TILE_SIZE;
+            Companion.sprite.direction = Direction.UP;
             Companion.followMode = false;
             Companion.hintMode = true;
         }, 'adam');

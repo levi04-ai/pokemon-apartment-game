@@ -74,7 +74,7 @@ const Companion = {
                         this.walkToTarget(8, 13); // Kitchen area
                         setTimeout(() => {
                             UI.showDialog('אדם', quote, () => {
-                                this.walkToTarget(this.homeCol, this.homeRow);
+                                this.gridCol = this.homeCol; this.gridRow = this.homeRow; this.sprite.x = this.homeCol * TILE_SIZE; this.sprite.y = this.homeRow * TILE_SIZE; this.sprite.direction = Direction.UP;
                             }, 'adam');
                         }, 3000);
                     } else {
@@ -84,7 +84,7 @@ const Companion = {
                         this.sprite.y = this.gridRow * TILE_SIZE;
                         this.facePlayer();
                         UI.showDialog('אדם', quote, () => {
-                            this.walkToTarget(this.homeCol, this.homeRow);
+                            this.gridCol = this.homeCol; this.gridRow = this.homeRow; this.sprite.x = this.homeCol * TILE_SIZE; this.sprite.y = this.homeRow * TILE_SIZE; this.sprite.direction = Direction.UP;
                         }, 'adam');
                     }
                 }
