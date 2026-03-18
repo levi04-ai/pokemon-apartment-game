@@ -147,29 +147,60 @@ const Game = {
             }
         });
 
-        // Mouse clicks for keypad
-        this.canvas.addEventListener('click', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-            if (UI.gameOverActive) { UI.handleGameOverClick(mx, my); return; }
-            if (UI.endScreenActive) { UI.handleEndScreenClick(mx, my); return; }
-            if (UI.keypadActive) UI.handleKeypadClick(mx, my);
-        });
+        // Click handler removed - using scaled version below
 
-        // Mobile buttons
+        // Mobile buttons - direct key simulation
         document.querySelectorAll('#mobileControls button').forEach(btn => {
             const key = btn.dataset.key;
-            btn.addEventListener('touchstart', (e) => {
+            let pressing = false;
+
+            const startPress = (e) => {
                 e.preventDefault();
-                document.dispatchEvent(new KeyboardEvent('keydown', { key }));
-            });
-            btn.addEventListener('touchend', (e) => {
+                e.stopPropagation();
+                if (pressing) return;
+                pressing = true;
+                // Directly set keys or trigger actions
+                if (key === 'ArrowUp') this.keys.up = true;
+                else if (key === 'ArrowDown') this.keys.down = true;
+                else if (key === 'ArrowLeft') this.keys.left = true;
+                else if (key === 'ArrowRight') this.keys.right = true;
+                else if (key === 'Enter') {
+                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+                }
+                else if (key === 'Escape') {
+                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+                }
+            };
+
+            const endPress = (e) => {
                 e.preventDefault();
-                document.dispatchEvent(new KeyboardEvent('keyup', { key }));
-            });
+                e.stopPropagation();
+                pressing = false;
+                if (key === 'ArrowUp') this.keys.up = false;
+                else if (key === 'ArrowDown') this.keys.down = false;
+                else if (key === 'ArrowLeft') this.keys.left = false;
+                else if (key === 'ArrowRight') this.keys.right = false;
+            };
+
+            btn.addEventListener('touchstart', startPress, { passive: false });
+            btn.addEventListener('touchend', endPress, { passive: false });
+            btn.addEventListener('touchcancel', endPress, { passive: false });
+            btn.addEventListener('mousedown', startPress);
+            btn.addEventListener('mouseup', endPress);
         });
 
-        // Touch
+        // Touch tap on canvas (for keypad, dialogs etc)
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const mx = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+            const my = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+            if (UI.gameOverActive) { UI.handleGameOverClick(mx, my); return; }
+            if (UI.endScreenActive) { UI.handleEndScreenClick(mx, my); return; }
+            if (UI.keypadActive) { UI.handleKeypadClick(mx, my); return; }
+            if (UI.dialogActive) { UI.advanceDialog(); return; }
+        });
+
+        // Touch swipe
         let tx = 0, ty = 0;
         this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; });
         this.canvas.addEventListener('touchend', (e) => {
