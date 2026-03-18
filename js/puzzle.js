@@ -96,7 +96,7 @@ const GameState = {
             // Walk to computer using A* pathfinding
             Companion.followMode = false;
             Companion.hintMode = true;
-            Companion.gridCol = 20; Companion.gridRow = 20; Companion.sprite.x = 20*TILE_SIZE; Companion.sprite.y = 20*TILE_SIZE; Companion.sprite.direction = Direction.UP;
+            Companion.gridCol = 23; Companion.gridRow = 21; Companion.sprite.x = 23*TILE_SIZE; Companion.sprite.y = 21*TILE_SIZE; Companion.sprite.direction = Direction.UP;
         }, 'adam');
     },
 
