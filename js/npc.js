@@ -42,54 +42,7 @@ const Companion = {
 
         if (this.followMode) this.followPlayer();
 
-        // Periodic check-in from Adam
-        if (this.hintMode && GameMap.currentZone === Zone.APARTMENT && !UI.isBlocking()) {
-            this.checkInTimer += dt;
-            if (this.checkInTimer >= this.checkInInterval) {
-                this.checkInTimer = 0;
-                // Move Adam toward player temporarily
-                const px = Player.gridCol, py = Player.gridRow;
-                const dist = Math.abs(this.gridCol - px) + Math.abs(this.gridRow - py);
-                if (dist > 5) {
-                    // Teleport nearby and say something
-                    this.gridCol = px + 2;
-                    this.gridRow = py;
-                    this.sprite.x = this.gridCol * TILE_SIZE;
-                    this.sprite.y = this.gridRow * TILE_SIZE;
-                    this.facePlayer();
-                    const rand = Math.random();
-                    let quote, goKitchen = false;
-                    if (rand < 0.3) {
-                        quote = ['מאמי את מסתדרת?', 'יופי, תמיד כאן לשירותך!'];
-                    } else if (rand < 0.5) {
-                        quote = ["I don't know Ricky, this is not my business"];
-                    } else if (rand < 0.7) {
-                        quote = ['רק באתי לשתות קפה, לא סיימתי'];
-                        goKitchen = true;
-                    } else {
-                        quote = ['מאמי את מסתדרת?', 'אני מאמין בך!'];
-                    }
-                    // Sometimes walk to kitchen first
-                    if (goKitchen) {
-                        this.walkToTarget(8, 13); // Kitchen area
-                        setTimeout(() => {
-                            UI.showDialog('אדם', quote, () => {
-                                this.gridCol=this.homeCol; this.gridRow=this.homeRow; this.sprite.x=this.homeCol*TILE_SIZE; this.sprite.y=this.homeRow*TILE_SIZE;
-                            }, 'adam');
-                        }, 3000);
-                    } else {
-                        this.gridCol = Player.gridCol + 2;
-                        this.gridRow = Player.gridRow;
-                        this.sprite.x = this.gridCol * TILE_SIZE;
-                        this.sprite.y = this.gridRow * TILE_SIZE;
-                        this.facePlayer();
-                        UI.showDialog('אדם', quote, () => {
-                            this.gridCol=this.homeCol; this.gridRow=this.homeRow; this.sprite.x=this.homeCol*TILE_SIZE; this.sprite.y=this.homeRow*TILE_SIZE;
-                        }, 'adam');
-                    }
-                }
-            }
-        }
+        // Adam stays at computer - no wandering
     },
 
     facePlayer() {
