@@ -582,7 +582,7 @@ const UI = {
             }
             ctx.font = '16px ' + PIXEL_FONT;
             ctx.fillStyle = sel ? '#FFD700' : '#AAA';
-            ctx.fillText((sel ? '► ' : '') + items[i], px+pw/2, iy + 28);
+            ctx.fillText((sel ? '◄ ' : '') + items[i], px+pw/2, iy + 28);
         }
         ctx.textAlign = 'left';
     },
