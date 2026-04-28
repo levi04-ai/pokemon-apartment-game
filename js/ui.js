@@ -540,6 +540,10 @@ const UI = {
         if (GameState.current === 'CHARACTER_SELECT') return;
         this.pauseActive = !this.pauseActive;
         this.pauseSelected = 0;
+        if (SFX.bgm) {
+            if (this.pauseActive) SFX.bgm.pause();
+            else if (!SFX.muted) SFX.bgm.play().catch(() => {});
+        }
     },
 
     pauseItems() {
