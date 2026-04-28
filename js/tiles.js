@@ -24,7 +24,9 @@ const Assets = {
 const SFX = {
     sounds: {},
     enabled: true,
+    muted: false,
     bgm: null,
+    _bgmVolume: 0.15,
 
     load(name, src) {
         const audio = new Audio();
@@ -34,7 +36,7 @@ const SFX = {
     },
 
     play(name, volume) {
-        if (!this.enabled) return;
+        if (!this.enabled || this.muted) return;
         const snd = this.sounds[name];
         if (!snd) return;
         const clone = snd.cloneNode();
@@ -46,12 +48,27 @@ const SFX = {
         if (this.bgm) { this.bgm.pause(); }
         this.bgm = new Audio(src);
         this.bgm.loop = true;
-        this.bgm.volume = volume || 0.3;
+        this._bgmVolume = volume || 0.3;
+        this.bgm.volume = this.muted ? 0 : this._bgmVolume;
         this.bgm.play().catch(() => {});
     },
 
     stopBGM() {
         if (this.bgm) { this.bgm.pause(); this.bgm = null; }
+    },
+
+    toggleMute() {
+        this.muted = !this.muted;
+        if (this.bgm) this.bgm.volume = this.muted ? 0 : this._bgmVolume;
+        try { localStorage.setItem('pokemon_muted', this.muted ? '1' : '0'); } catch (e) {}
+        return this.muted;
+    },
+
+    initMuteFromStorage() {
+        try {
+            const v = localStorage.getItem('pokemon_muted');
+            if (v === '1') this.muted = true;
+        } catch (e) {}
     }
 };
 

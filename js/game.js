@@ -11,6 +11,7 @@ const Game = {
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
         loadAssets();
+        SFX.initMuteFromStorage();
         GameMap.init();
         this.waitForAssets();
     },
@@ -88,11 +89,19 @@ const Game = {
             // Pause menu
             if (UI.pauseActive) {
                 if (e.key === 'Escape') { UI.togglePause(); e.preventDefault(); return; }
-                if (e.key === 'ArrowUp' || e.key === 'w') { UI.pauseSelected = 0; e.preventDefault(); return; }
-                if (e.key === 'ArrowDown' || e.key === 's') { UI.pauseSelected = 1; e.preventDefault(); return; }
+                const itemCount = UI.pauseItems().length;
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                    UI.pauseSelected = (UI.pauseSelected - 1 + itemCount) % itemCount;
+                    SFX.play('click', 0.3);
+                    e.preventDefault(); return;
+                }
+                if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                    UI.pauseSelected = (UI.pauseSelected + 1) % itemCount;
+                    SFX.play('click', 0.3);
+                    e.preventDefault(); return;
+                }
                 if (e.key === ' ' || e.key === 'Enter') {
-                    if (UI.pauseSelected === 0) UI.togglePause(); // Resume
-                    else location.reload(); // Restart
+                    UI.pauseSelect();
                     e.preventDefault(); return;
                 }
                 return;
@@ -194,6 +203,8 @@ const Game = {
             const rect = this.canvas.getBoundingClientRect();
             const mx = (e.clientX - rect.left) * (this.canvas.width / rect.width);
             const my = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+            if (UI.pauseActive) { UI.handlePauseClick(mx, my); return; }
+            if (UI.handleMuteClick(mx, my)) return;
             if (UI.gameOverActive) { UI.handleGameOverClick(mx, my); return; }
             if (UI.endScreenActive) { UI.handleEndScreenClick(mx, my); return; }
             if (UI.keypadActive) { UI.handleKeypadClick(mx, my); return; }
@@ -207,8 +218,12 @@ const Game = {
             e.preventDefault();
             const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
             if (Math.sqrt(dx*dx+dy*dy) < 20) {
+                const rect = this.canvas.getBoundingClientRect();
+                const mx = (e.changedTouches[0].clientX - rect.left) * (this.canvas.width / rect.width);
+                const my = (e.changedTouches[0].clientY - rect.top) * (this.canvas.height / rect.height);
+                if (UI.pauseActive) { UI.handlePauseClick(mx, my); return; }
+                if (UI.handleMuteClick(mx, my)) return;
                 if (UI.keypadActive) {
-                    const rect = this.canvas.getBoundingClientRect();
                     UI.handleKeypadClick(e.changedTouches[0].clientX - rect.left, e.changedTouches[0].clientY - rect.top);
                 } else Player.interact();
                 return;

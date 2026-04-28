@@ -156,6 +156,8 @@ const UI = {
         if (this.endScreenActive) this.drawEndScreen(ctx, cw, ch);
         if (this.gameOverActive) this.drawGameOver(ctx, cw, ch);
         if (this.pauseActive) this.drawPause(ctx, cw, ch);
+
+        this.drawMuteButton(ctx, cw, ch);
     },
 
     drawCharacterSelect(ctx, cw, ch) {
@@ -540,12 +542,16 @@ const UI = {
         this.pauseSelected = 0;
     },
 
+    pauseItems() {
+        return ['המשך משחק', SFX.muted ? '🔇 הפעל סאונד' : '🔊 השתק סאונד', 'תפריט ראשי'];
+    },
+
     drawPause(ctx, cw, ch) {
-        // Dim background
         ctx.fillStyle = 'rgba(0,0,0,0.7)';
         ctx.fillRect(0, 0, cw, ch);
 
-        const pw = 280, ph = 200;
+        const items = this.pauseItems();
+        const pw = 300, ph = 90 + items.length * 55;
         const px = cw/2 - pw/2, py = ch/2 - ph/2;
 
         ctx.fillStyle = 'rgba(10,10,30,0.95)';
@@ -558,21 +564,81 @@ const UI = {
         ctx.textAlign = 'center';
         ctx.fillText('⏸ עצירה', px + pw/2, py + 35);
 
-        const items = ['המשך משחק', 'התחל מחדש'];
+        this._pauseBtnRects = [];
         for (let i = 0; i < items.length; i++) {
-            const iy = py + 65 + i * 55;
+            const iy = py + 60 + i * 55;
+            const bx = px+20, by = iy, bw = pw-40, bh = 42;
+            this._pauseBtnRects.push({ x: bx, y: by, w: bw, h: bh });
             const sel = i === this.pauseSelected;
             ctx.fillStyle = sel ? 'rgba(85,136,204,0.3)' : 'rgba(30,30,50,0.5)';
-            ctx.beginPath(); ctx.roundRect(px+20, iy, pw-40, 42, 8); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 8); ctx.fill();
             if (sel) {
                 ctx.strokeStyle = '#88BBFF'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.roundRect(px+20, iy, pw-40, 42, 8); ctx.stroke();
+                ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 8); ctx.stroke();
             }
             ctx.font = '16px ' + PIXEL_FONT;
             ctx.fillStyle = sel ? '#FFD700' : '#AAA';
             ctx.fillText((sel ? '► ' : '') + items[i], px+pw/2, iy + 28);
         }
         ctx.textAlign = 'left';
+    },
+
+    pauseSelect() {
+        const items = this.pauseItems();
+        const idx = this.pauseSelected;
+        if (idx === 0) {
+            this.togglePause();
+        } else if (idx === 1) {
+            SFX.toggleMute();
+        } else if (idx === 2) {
+            this.pauseActive = false;
+            SFX.stopBGM();
+            location.reload();
+        }
+    },
+
+    handlePauseClick(mx, my) {
+        if (!this._pauseBtnRects) return false;
+        for (let i = 0; i < this._pauseBtnRects.length; i++) {
+            const r = this._pauseBtnRects[i];
+            if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+                this.pauseSelected = i;
+                this.pauseSelect();
+                return true;
+            }
+        }
+        return false;
+    },
+
+    _muteBtnRect: null,
+
+    drawMuteButton(ctx, cw, ch) {
+        if (GameState.current === 'CHARACTER_SELECT') { this._muteBtnRect = null; return; }
+        const size = 36, pad = 10;
+        const bx = pad, by = pad;
+        this._muteBtnRect = { x: bx, y: by, w: size, h: size };
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.beginPath(); ctx.roundRect(bx, by, size, size, 8); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(bx, by, size, size, 8); ctx.stroke();
+        ctx.font = '20px ' + PIXEL_FONT;
+        ctx.fillStyle = '#FFF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(SFX.muted ? '🔇' : '🔊', bx + size/2, by + size/2 + 1);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+    },
+
+    handleMuteClick(mx, my) {
+        const r = this._muteBtnRect;
+        if (!r) return false;
+        if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+            SFX.toggleMute();
+            SFX.play('click', 0.4);
+            return true;
+        }
+        return false;
     },
 
     _tears: null,
