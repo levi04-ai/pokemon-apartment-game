@@ -547,7 +547,7 @@ const UI = {
     },
 
     pauseItems() {
-        return ['המשך משחק', SFX.muted ? '🔇 הפעל סאונד' : '🔊 השתק סאונד', 'תפריט ראשי'];
+        return ['המשך משחק', 'תפריט ראשי'];
     },
 
     drawPause(ctx, cw, ch) {
@@ -588,13 +588,10 @@ const UI = {
     },
 
     pauseSelect() {
-        const items = this.pauseItems();
         const idx = this.pauseSelected;
         if (idx === 0) {
             this.togglePause();
         } else if (idx === 1) {
-            SFX.toggleMute();
-        } else if (idx === 2) {
             this.pauseActive = false;
             SFX.stopBGM();
             location.reload();
