@@ -51,23 +51,42 @@ const Companion = {
         else this.sprite.direction = dy > 0 ? Direction.DOWN : Direction.UP;
     },
 
+    _hintsByState: {},
+
+    _getHintForState(state) {
+        const hints = {
+            'INDOOR_START': 'לכי למרפסת, שם מחכה לך החידה הראשונה',
+            'BALCONY_ACTIVE': 'את במרפסת, תעני על השאלה בוואטסאפ',
+            'BALCONY_COMPLETE': 'לכי למטבח, חפשי את האור האדום',
+            'KITCHEN_ACTIVE': 'את במטבח, תפתרי את חידת הקפה',
+            'KITCHEN_COMPLETE': 'החידה הבאה היא בספרייה, ליד השטיח',
+            'LIBRARY_ACTIVE': 'את בספרייה, תעני על השאלה',
+            'LIBRARY_COMPLETE': 'לכי לחדר של רות, החידה הבאה שם',
+            'RUTH_ROOM_ACTIVE': 'את בחדר של רות, תפתרי את החידה',
+            'RUTH_ROOM_COMPLETE': 'לכי לחדר השינה, שם מחכה לך החידה הבאה',
+            'BEDROOM_ACTIVE': 'את בחדר השינה, ספרי את החלונות במרפסת',
+            'BEDROOM_COMPLETE': 'הגיע הזמן לחזור למרפסת לסיום'
+        };
+        return hints[state] || 'את מדהימה, המשיכי ככה!';
+    },
+
     interact() {
         this.facePlayer();
 
         if (this.hintMode) {
-            if (GameState.current === 'INDOOR_START' || GameState.current === 'BALCONY_ACTIVE') {
-                UI.showDialog('אדם', 'אני במחשב שלי, אם את צריכה משהו אל תהססי. אפילו שאני עובד את בראש סדר העדיפויות שלי', null, 'adam');
-            } else if (GameState.current === 'KITCHEN_COMPLETE' || GameState.current === 'LIBRARY_ACTIVE') {
-                UI.showDialog('אדם', 'החידה הבאה היא בספרייה, ליד השטיח', null, 'adam');
-            } else if (GameState.current === 'BALCONY_COMPLETE') {
-                UI.showDialog('אדם', 'לכי למטבח, חפשי את האור האדום', null, 'adam');
+            const state = GameState.current;
+            const hint = this._getHintForState(state);
+            const firstTime = !this._hintsByState[state];
+            this._hintsByState[state] = true;
+
+            if (firstTime) {
+                UI.showDialog('אדם', ['אני במחשב שלי, אם את צריכה משהו אל תהססי. אפילו שאני עובד את בראש סדר העדיפויות שלי', hint], null, 'adam');
             } else {
-                UI.showDialog('אדם', 'את מדהימה, המשיכי ככה!', null, 'adam');
+                UI.showDialog('אדם', hint, null, 'adam');
             }
             return;
         }
 
-        // Default outdoor chat
         if (GameState.current === 'OUTDOOR_START') {
             GameState.triggerAdamGreeting();
         }
