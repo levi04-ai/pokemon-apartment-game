@@ -55,19 +55,7 @@ const Companion = {
         this.facePlayer();
 
         if (this.hintMode) {
-            // Random chance to offer song
-            const rand = Math.random();
-            if (rand < 0.25 && !GameState._songPlayed) {
-                UI.showPuzzle('🎵', 'רוצה לשמוע משהו שהקלטתי?', ['כן', 'לא'], (idx) => {
-                    if (idx === 0) {
-                        GameState._songPlayed = true;
-                        GameState.playGalilSong();
-                        UI.showDialog('אדם', '🎵 מתנגן...', null, 'adam');
-                    } else {
-                        UI.showDialog('אדם', 'טוב, אני במחשב', null, 'adam');
-                    }
-                });
-            } else if (GameState.current === 'INDOOR_START' || GameState.current === 'BALCONY_ACTIVE') {
+            if (GameState.current === 'INDOOR_START' || GameState.current === 'BALCONY_ACTIVE') {
                 UI.showDialog('אדם', 'אני במחשב שלי, אם את צריכה משהו אל תהססי. אפילו שאני עובד את בראש סדר העדיפויות שלי', null, 'adam');
             } else if (GameState.current === 'KITCHEN_COMPLETE' || GameState.current === 'LIBRARY_ACTIVE') {
                 UI.showDialog('אדם', 'החידה הבאה היא בספרייה, ליד השטיח', null, 'adam');

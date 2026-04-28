@@ -100,7 +100,6 @@ const GameState = {
         }, 'adam');
     },
 
-    // Phase 3.5: Adam encounter - play recording
     _encounterTriggered: false,
     _stepsSinceIndoor: 0,
 
@@ -110,47 +109,27 @@ const GameState = {
         if (this._stepsSinceIndoor >= 5) {
             this._encounterTriggered = true;
             this.setState('ADAM_ENCOUNTER_ACTIVE');
-            // Adam walks toward Tal
             Companion.walkToTarget(Player.gridCol + 1, Player.gridRow);
-            // Wait for Adam to arrive then trigger dialogue
             const waitForAdam = setInterval(() => {
                 const dist = Math.abs(Companion.gridCol - Player.gridCol) + Math.abs(Companion.gridRow - Player.gridRow);
                 if (dist <= 2 || !Companion.walkingToTarget) {
                     clearInterval(waitForAdam);
                     Companion.facePlayer();
-                    UI.showPuzzle('🎵', 'רוצה לשמוע משהו שהקלטתי?', ['כן', 'לא'], (idx) => {
-                        if (idx === 0) {
-                            // Play the recording
-                            this.setState('PLAYING_RECORDING');
-                            this.playGalilSong();
-                            UI.showDialog('אדם', '🎵 מתנגן...', () => {
-                                this.setState('INDOOR_START');
-                                this._stepsSinceIndoor = 0;
-                                Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
-                            }, 'adam');
-                        } else {
-                            UI.showDialog('אדם', 'טוב, אני במחשב', () => {
-                                this.setState('INDOOR_START');
-                                this._stepsSinceIndoor = 0;
-                                Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
-                            }, 'adam');
-                        }
-                    });
+                    const lines = [
+                        ['את מדהימה!', 'תמשיכי ככה, את עושה עבודה נהדרת'],
+                        ['היי טל, רק רציתי להגיד', 'שאני גאה בך מאוד'],
+                        ['את הולכת מצוין!', 'אל תוותרי, את כמעט שם'],
+                        ['וואו, איזה כיף לראות אותך', 'את פשוט אלופה']
+                    ];
+                    const pick = lines[Math.floor(Math.random() * lines.length)];
+                    UI.showDialog('אדם', [pick[0], pick[1], 'אני חוזר לעבוד, בהצלחה!'], () => {
+                        this.setState('INDOOR_START');
+                        this._stepsSinceIndoor = 0;
+                        Companion.walkToTarget(Companion.homeCol, Companion.homeRow);
+                    }, 'adam');
                 }
             }, 300);
         }
-    },
-
-    playGalilSong() {
-        // Lower BGM while galil plays
-        if (SFX.bgm) SFX.bgm.volume = 0.05;
-        const audio = new Audio('galil_song.mp3');
-        audio.volume = 0.7;
-        audio.play().catch(() => {});
-        audio.onended = () => {
-            // Restore BGM volume
-            if (SFX.bgm) SFX.bgm.volume = 0.15;
-        };
     },
 
     // Phase 4: Balcony puzzle - WhatsApp
