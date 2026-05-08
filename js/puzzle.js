@@ -178,13 +178,13 @@ const GameState = {
         if (this.current !== 'KITCHEN_COMPLETE' && this.current !== 'LIBRARY_ACTIVE') return;
         this.setState('LIBRARY_ACTIVE');
         SFX.play('puzzle', 0.5);
-        UI.showPuzzle('📚 חידת הספרייה', 'מה היא פרשת השבוע?',
-            ['ויקרא', 'ויקהל', 'פקודי', 'כי תשא'],
+        UI.showPuzzle('📚 חידת הספרייה', 'מי היה המלך הראשון שמלך על עם ישראל?',
+            ['חזקיהו', 'שאול', 'שלמה', 'דוד'],
             (idx) => {
-                if (idx === 0) {
+                if (idx === 1) {
                     SFX.play('correct', 0.5);
                     this.setState('LIBRARY_COMPLETE');
-                    this._adamComes('מצוין, ויקרא!', 'עכשיו לכי לחדר של רות');
+                    this._adamComes('מצוין, שאול המלך!', 'עכשיו לכי לחדר של רות');
                 } else {
                     if (!this.loseHeart()) {
                         UI.showDialog('', '.לא נכון, נסי שוב', () => { this.setState('KITCHEN_COMPLETE'); });
