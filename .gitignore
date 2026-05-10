@@ -1,0 +1,53 @@
+# Personal backup folder
+_personal_backup/
+
+# Personal screenshots and images
+Screenshot*.png
+WhatsApp*.mp4
+WhatsApp*.jpg
+*.psd
+*.aseprite
+*.prproj
+*.cfa
+*.pek
+
+# Adobe Premiere
+Adobe Premiere Pro Audio Previews/
+Adobe Premiere Pro Auto-Save/
+
+# Reference / dev-only files
+frames/
+pocket_assets/
+debug.html
+debug_grid.jpg
+test.html
+gen_sprites.py
+adam goal.png
+adam.jpeg
+tal.jpeg
+tal_sheet.png
+red.png
+
+# Unused audio
+בוא נסע אל הגליל.mp3
+בוא נסע אל הגליל 2.mp3
+galil_song.mp3
+
+# Personal Hebrew-named images
+בית מבחוץ.jpeg
+מפה מפורטת.png
+מפת על דירה.jpg
+פנים הדירה.jpeg
+פנים הדירה 2.png
+
+# Random UUIDs (personal screenshots)
+0cc366ca-cbcc-4db8-8366-34ec2d4a206a.jpg
+29.06.21.jpg
+a99a2e9f-045b-45a9-9087-65c1aa8a8e29.jpg
+824b285a-bcc4-4bcf-8379-ff02e9a29282.jpg
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+*.zip
