@@ -30,14 +30,14 @@ body {
 }
 
 #siteCredit {
-    margin-top: 10px;
+    margin-top: 14px;
     font-family: 'PublicPixel', 'VT323', monospace;
-    font-size: 13px;
+    font-size: 20px;
     color: #88BBFF;
     text-decoration: none;
-    letter-spacing: 1px;
-    text-shadow: 0 0 6px rgba(85, 136, 204, 0.4);
-    opacity: 0.85;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 8px rgba(85, 136, 204, 0.5);
+    opacity: 0.9;
     transition: opacity 0.2s, color 0.2s;
 }
 
